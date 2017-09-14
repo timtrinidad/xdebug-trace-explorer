@@ -1,7 +1,6 @@
 <?php
 
 class XtExplorer {
-    const MAX_LINE = 10000;
     const MAX_PARAM_LENGTH = 80;
 
     public $data = null;
@@ -9,8 +8,13 @@ class XtExplorer {
 
     protected  $_filePath = null;
 
-    public function __construct($filePath) {
+    protected $_max_line;
+    protected $_max_level;
+
+    public function __construct($filePath, $maxLine = 10000, $maxLevel = 10) {
         $this->_filePath = $filePath;
+        $this->_max_line = $maxLine;
+        $this->_max_level = $maxLevel;
         $this->data = $this->_parse();
     }
 
@@ -35,9 +39,8 @@ class XtExplorer {
         $traceData = [];
         $prevFunction = null;
         while (($line = fgetcsv($handle, 0, "\t")) !== FALSE) {
-
             $i++;
-            if ($i>self::MAX_LINE) break;
+            if ($i>$this->_max_line) break;
 
             if ($isBody && ($line[0]=='' || substr($line[0],0,strlen('TRACE END')) == 'TRACE END')) {
                 $isBody = false;
@@ -61,6 +64,10 @@ class XtExplorer {
                     'children'      => [],
                     'parentId'        => null
                 ];
+
+                if ($lineData['level'] > $this->_max_level) {
+                    continue;
+                }
 
                 if ($lineData['paramCount']>0) {
                     for ($i=0;$i<$lineData['paramCount'];$i++) {

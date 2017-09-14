@@ -14,10 +14,12 @@ foreach ($files as $f) {
 
 // also accept custom path
 $traceFile = isset($_GET['filePath'])?$_GET['filePath']:'trace.sample.xt';
+$maxLine = isset($_GET['maxLine'])?$_GET['maxLine']:10000;
+$maxLevel = isset($_GET['maxLevel'])?$_GET['maxLevel']:10;
+
 
 if ($traceFile != '') {
-    $traceExplorer = new XtExplorer($traceFile);
-    //$traceExplorer->filterPrefix = '/var/www/tala';
+    $traceExplorer = new XtExplorer($traceFile, $maxLine, $maxLevel);
 }
 
 include 'view.php';

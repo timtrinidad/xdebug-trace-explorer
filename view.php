@@ -26,10 +26,12 @@ information</p>
 
 <form id="frm">
     Trace file path (*.xt):<br/>
-    <input type="text" id="filePath" name="filePath" style="width:400px" value="<?php if(isset
-    ($traceFile))
-        echo
-    $traceFile?>"/> <input type="submit" value="Render"/>
+    <input type="text" id="filePath" name="filePath" style="width:400px" value="<?php if(isset($traceFile)) {echo $traceFile;} ?>"/><br />
+    Max lines to analyze:<br/>
+    <input type="text" id="maxLine" name="maxLine" style="width:400px" value="<?php echo $maxLine; ?>"/><br />
+    Max depth/level to analyze:<br/>
+    <input type="text" id="maxLevel" name="maxLevel" style="width:400px" value="<?php echo $maxLevel; ?>"/><br />
+    <input type="submit" value="Render"/>
 </form>
 <?php if (count($traceFiles)>0):?>
     <p>or pick from lists we found at <?php echo $traceFolder?>:<br/>
