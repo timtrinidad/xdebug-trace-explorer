@@ -11,10 +11,11 @@ class XtExplorer {
     protected $_max_line;
     protected $_max_level;
 
-    public function __construct($filePath, $maxLine = 10000, $maxLevel = 10) {
+    public function __construct($filePath, $maxLine = 10000, $maxLevel = 10, $toExpand = array()) {
         $this->_filePath = $filePath;
         $this->_max_line = $maxLine;
         $this->_max_level = $maxLevel;
+        $this->_to_expand = $toExpand;
         $this->data = $this->_parse();
     }
 
@@ -138,13 +139,13 @@ class XtExplorer {
     }
 
     public function render() {
-        $this->_generateTree($this->data[0]);
+        $this->_generateTree($this->data[0], '{main}');
     }
 
     /**
      * Generate HTML node (ul>li style) recursively
      */
-    private function _generateTree(&$node) {
+    private function _generateTree(&$node, $callPath = '') {
         $hasChildren = count($node['children'])>0;
         $expandButton = $hasChildren?'<span class="fn-expand" id="fn-'.$node['functionId'].'">[+] </span>':'----';
 
@@ -167,21 +168,32 @@ class XtExplorer {
         if ($this->filterPrefix)
             $filePath = str_replace($this->filterPrefix, '', $filePath);
 
-        $timeCost = isset($node['timeCost'])?number_format($node['timeCost'],5).'s':'';
+        $timeCost = isset($node['timeCost'])?round($node['timeCost']*1000).'ms':'';
+
+        $toExpandClass = $this->shouldPreExpand($callPath) ? 'pre-expand' : '';
 
         // render
-        echo "<li><div class='fn-line'>".$expandButton.
+        echo "<li><div class='fn-line $toExpandClass'>".$expandButton.
             "<span class='fn-id'>#{$node['functionId']}</span> <span class='fn-time'>$timeCost</span><span
         class='fn-file'>$filePath [line {$node['lineNumber']}]</span>:
         <span class='fn-name'>{$node['functionName']}(<span class='fn-params'>$params</span>)</span></div>";
         if ($hasChildren) {
             echo "<ul class='fn-sub hidden' id='sub-fn-{$node['functionId']}'>";
             foreach ($node['children'] as &$item) {
-                $this->_generateTree($item);
+                $this->_generateTree($item, $callPath . ',' . $item['functionName']);
             }
             echo "</ul>";
         }
         echo "</li>";
+    }
+
+    private function shouldPreExpand($callPath) {
+        foreach($this->_to_expand as $toExpand) {
+            if(strpos($toExpand, $callPath) === 0) {
+                return true;
+            }
+        }    
+        return false;
     }
 
 }

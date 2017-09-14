@@ -31,6 +31,8 @@ information</p>
     <input type="text" id="maxLine" name="maxLine" style="width:400px" value="<?php echo $maxLine; ?>"/><br />
     Max depth/level to analyze:<br/>
     <input type="text" id="maxLevel" name="maxLevel" style="width:400px" value="<?php echo $maxLevel; ?>"/><br />
+    Paths to Expand (one per line, path elements are comma separated)<br/>
+    <textarea type="text" id="toExpand" name="toExpand" style="width:400px; height: 200px"><?php echo $toExpand; ?></textarea><br />
     <input type="submit" value="Render"/>
 </form>
 <?php if (count($traceFiles)>0):?>
@@ -63,6 +65,8 @@ information</p>
                 $('#filePath').val($('#xt-select').val());
                 $('#frm').submit();
             });
+
+            $('.pre-expand').click();
         });
     </script>
 <?php endif;?>
