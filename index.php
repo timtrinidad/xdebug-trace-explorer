@@ -1,12 +1,13 @@
 <?php
 
-ini_set('memory_limit', '2048M');
+ini_set('memory_limit', '4096M');
+set_time_limit(-1);
 
 include 'XtExplorer.php';
 
 // scan xdebug trace output dir for files
 $traceFolder = ini_get('xdebug.trace_output_dir');
-$files  = scandir($traceFolder);
+$files  = $traceFolder ? scandir($traceFolder) : []; 
 $traceFiles = [];
 foreach ($files as $f) {
     if ($f != '.' && $f != '..') $traceFiles[] = $f;
